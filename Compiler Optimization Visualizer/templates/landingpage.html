@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Compiler Optimization Playground</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        #container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: 20px;
+            padding: 20px;
+        }
+
+        #input-output-container {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        #input-container, #output-container {
+            flex: 1;
+            padding: 20px;
+            background-color: transparent;
+            color: #000;
+        }
+
+        #code-input, #optimized-code {
+            width: 100%;
+            height: 200px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            background-color: #000;
+            color: #fff;
+            overflow: auto;
+        }
+
+        #optimization-buttons {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        button {
+            margin: 5px;
+            padding: 10px;
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        h1 {
+            text-align: center;
+            color: #007BFF;
+        }
+
+        #reset-button {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #dc3545;
+        }
+
+        #reset-button:hover {
+            background-color: #c82333;
+        }
+
+        #output-container pre {
+            white-space: pre-wrap;
+            overflow: auto;
+            max-height: 400px;
+        }
+
+        .highlight {
+            background-color: yellow;
+            color: black;
+        }
+        #optimized-code {
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <h1>Compiler Optimization Playground</h1>
+    <div id="container">
+        <div id="input-output-container">
+            <div id="input-container">
+                <h2>Input Code:</h2>
+                <textarea id="code-input" placeholder="Enter your code here"></textarea>
+            </div>
+            <div id="optimization-buttons">
+                <h2>Optimizations:</h2>
+                <button onclick="optimize('Constant Propagation')">Constant Propagation</button>
+                <button onclick="optimize('Constant Folding')">Constant Folding</button>
+
+                <button onclick="optimize('Function Inlining')">Function Inlining</button>
+                <button onclick="optimize('Strength Reduction')">Strength Reduction</button>
+                <button onclick="optimize('Dead Code Elimination')">Dead Code Elimination</button>
+                <button onclick="optimize('Common Sub-Expression Elimination')">Common Sub-Expression Elimination</button>
+
+                <button onclick="resetInputOutput()" id="reset-button">Reset Input/Output</button>
+            </div>
+            <div id="output-container">
+                <h2>Optimized Code:</h2>
+                <pre id="optimized-code"></pre>
+            </div>
+        </div>
+        <div id="comments-and-remarks">
+            <h2>Comments and Remarks:</h2>
+            <div id="comments"></div>
+        </div>
+    </div>
+
+    <script>
+        function optimize(optimizationType) {
+            const codeInput = document.getElementById('code-input').value;
+
+            fetch('/optimize', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    'code_input': codeInput,
+                    'optimization_type': optimizationType,
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('optimized-code').innerHTML = data.highlighted_code;
+                
+                if(optimizationType == "Function Inlining"){
+                  
+                        document.getElementById('comments').innerHTML = "Function Inlining possible in following functions: " + data.comments.join('<br>');
+
+
+                }else{
+                    document.getElementById('comments').innerHTML = data.comments.join('<br>');
+
+                }
+            });
+        }
+
+        function resetInputOutput() {
+            document.getElementById('code-input').value = '';
+            document.getElementById('optimized-code').innerHTML = '';
+            document.getElementById('comments').innerHTML = '';
+        }
+    </script>
+</body>
+</html>
